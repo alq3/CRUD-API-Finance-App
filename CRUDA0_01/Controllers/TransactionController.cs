@@ -11,20 +11,20 @@ public class TransactionController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-
+    //TO DO: Add Logging 
     public TransactionController(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    // GET: api/transaction
+   
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
     {
         return await _context.Transactions.ToListAsync();
     }
 
-    // GET: api/transaction/{id}
+   
     [HttpGet("{id}")]
     public async Task<ActionResult<Transaction>> GetTransaction(Guid id)
     {
@@ -33,7 +33,7 @@ public class TransactionController : ControllerBase
         return transaction;
     }
 
-    // POST: api/transaction
+    
     [HttpPost]
     public async Task<ActionResult<Transaction>> CreateTransaction(Transaction transaction)
     {
@@ -43,7 +43,7 @@ public class TransactionController : ControllerBase
         return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
     }
 
-    // PUT: api/transaction/{id}
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTransaction(Guid id, Transaction updated)
     {
@@ -55,7 +55,7 @@ public class TransactionController : ControllerBase
         return NoContent();
     }
 
-    // DELETE: api/transaction/{id}
+   
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTransaction(Guid id)
     {
@@ -68,7 +68,7 @@ public class TransactionController : ControllerBase
         return NoContent();
     }
 
-    // GET: api/transaction/account/{accountId}
+    
     [HttpGet("account/{accountId}")]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactionsByAccount(Guid accountId)
     {

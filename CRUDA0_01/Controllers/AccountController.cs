@@ -11,7 +11,7 @@ public class AccountController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-
+    //TO DO: Add Logging 
     public AccountController(ApplicationDbContext context, ILogger<AccountController> logger)
     {
         this._context = context;
