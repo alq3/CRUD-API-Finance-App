@@ -1,6 +1,6 @@
 # CRUD-API-Finance-App
 
-This project includes a foundational backend CRUD RESTful API for a personal finance app written in C#, using modern frameworks, showcasing a way software can be used to solve a real-world problem. 
+This project implements a foundational backend RESTful CRUD API for a personal finance app, written in C# using modern frameworks. It demonstrates how software can be applied to solve real-world problems. 
 
 Tech stack includes : 
 - ASP.NET Core 9 (Web API)
