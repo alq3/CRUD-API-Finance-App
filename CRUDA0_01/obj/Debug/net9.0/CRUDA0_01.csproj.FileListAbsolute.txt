@@ -44,3 +44,4 @@ C:\Users\user\RiderProjects\CRUDA0_01\CRUDA0_01\obj\Debug\net9.0\staticwebassets
 C:\Users\user\RiderProjects\CRUDA0_01\CRUDA0_01\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\user\RiderProjects\CRUDA0_01\CRUDA0_01\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\user\RiderProjects\CRUDA0_01\CRUDA0_01\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\user\RiderProjects\CRUDA0_01\CRUDA0_01\obj\Debug\net9.0\CRUDA0_01.sourcelink.json

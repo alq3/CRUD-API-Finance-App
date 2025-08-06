@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CRUDA0_01.Models.Enums;
 
 namespace CRUDA0_01.Models.Entities;
@@ -9,6 +10,7 @@ public class Pocket
     public string? Title { get; set; }
     public string? Summary { get; set; }
     public Guid AccountId { get; set; }  
-    public Account Account { get; set; } = null!;  
-    
+  
+    [JsonIgnore]
+    public Account? Account { get; set; }
 }

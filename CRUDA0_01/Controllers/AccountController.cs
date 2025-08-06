@@ -11,7 +11,7 @@ public class AccountController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-    //TO DO: Add Logging 
+    
     public AccountController(ApplicationDbContext context, ILogger<AccountController> logger)
     {
         this._context = context;
@@ -27,6 +27,7 @@ public class AccountController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
     {
+        _logger.LogInformation("This is all accounts");
         return await _context.Accounts.ToListAsync();
     }
 
@@ -34,7 +35,12 @@ public class AccountController : ControllerBase
     public async Task<ActionResult<Account>> GetAccount(Guid id)
     {
         var account = await _context.Accounts.FindAsync(id);
-        if (account == null) return NotFound();
+        if (account == null)
+        {
+            _logger.LogInformation("Account not found ");
+            return NotFound();
+        }
+        _logger.LogInformation("This is account {@account}", account);
         return account; //returns an account
     }
 
@@ -43,6 +49,7 @@ public class AccountController : ControllerBase
     {
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Account created with ID: {account}", account.Id);
         return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
     }
 
@@ -53,17 +60,28 @@ public class AccountController : ControllerBase
 
         _context.Entry(updated).State = EntityState.Modified;
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Account updated: {updated}", updated.Id);
         return NoContent(); //context returned just updated
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount(Guid id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _context.Accounts
+            .Include(a => a.Transactions)
+            .Include(a => a.Goals)
+            .Include(a => a.Pockets)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
         if (account == null) return NotFound();
+        _logger.LogInformation("Account not found: {account}", account.Id);
+        _context.Transactions.RemoveRange(account.Transactions);
+        _context.Goals.RemoveRange(account.Goals);
+        _context.Pockets.RemoveRange(account.Pockets);
 
         _context.Accounts.Remove(account);
         await _context.SaveChangesAsync();
-        return NoContent(); //context returned just updated
+        _logger.LogInformation("Account deleted: {account}", account.Id);
+        return NoContent();
     }
 }

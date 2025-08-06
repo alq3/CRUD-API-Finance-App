@@ -1,4 +1,5 @@
 using CRUDA0_01.Models.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 
@@ -13,5 +14,7 @@ public class ApplicationDbContext : DbContext
    public DbSet<Pocket> Pockets { get; set; } = null!;
    public DbSet<Transaction> Transactions { get; set; } = null!;
    
+  
+
 }
  

@@ -13,9 +13,9 @@ public class Account
     [EnumDataType(typeof(Currency))]
     public Currency Currency { get; set; } = Currency.EUR;
     
-    public List<Transaction> Transactions { get; set; } = new();
-    public List<Goal> Goals { get; set; } = new();
-    public List<Pocket> Pockets { get; set; } = new();
+    public List<Transaction>? Transactions { get; set; } = new();
+    public List<Goal>? Goals { get; set; } = new();
+    public List<Pocket>? Pockets { get; set; } = new();
 
     
 }

@@ -11,29 +11,35 @@ public class PocketController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-    //TO DO: Add Logging 
+    
     public PocketController(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    // GET: api/pocket
+    //get all tasks 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Pocket>>> GetPockets()
     {
+        _logger.LogInformation("Get all Pockets");
         return await _context.Pockets.ToListAsync();
     }
 
-    // GET: api/pocket/{id}
+    //get a specific task
     [HttpGet("{id}")]
     public async Task<ActionResult<Pocket>> GetPocket(Guid id)
     {
         var pocket = await _context.Pockets.FindAsync(id);
-        if (pocket == null) return NotFound();
+        if (pocket == null)
+        {
+            _logger.LogInformation("Pocket not found: {id}", id);
+            return NotFound();
+        }
+        _logger.LogInformation("Pocket found: {id}", pocket.Id);
         return pocket;
     }
 
-    // POST: api/pocket
+    // create a pocket(POST)
     [HttpPost]
     public async Task<ActionResult<Pocket>> CreatePocket(Pocket pocket)
     {
@@ -41,49 +47,61 @@ public class PocketController : ControllerBase
         if (pocket.Currency == null)
         {
             var account = await _context.Accounts.FindAsync(pocket.AccountId);
-            if (account == null) return BadRequest("Invalid AccountId");
+            if (account == null)
+            {
+                _logger.LogInformation("Account not found: {account}", pocket.AccountId);
+                return BadRequest("Invalid AccountId");
+            }
             pocket.Currency = account.Currency;
         }
 
         _context.Pockets.Add(pocket);
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Pocket created: {pocket}", pocket.Id);
         return CreatedAtAction(nameof(GetPocket), new { id = pocket.Id }, pocket);
     }
 
-    // PUT: api/pocket/{id}
+    // (PUT) update a pocket 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePocket(Guid id, Pocket updated)
     {
-        if (id != updated.Id) return BadRequest();
+        if (id != updated.Id)
+        {
+            _logger.LogInformation("Pocket update not found: {id}", updated.Id);
+            return BadRequest();
+        }
 
         _context.Entry(updated).State = EntityState.Modified;
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Pocket updated: {id}", updated.Id);
         return NoContent();
     }
 
-    // DELETE: api/pocket/{id}
+    // (DELETE)
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePocket(Guid id)
     {
         var pocket = await _context.Pockets.FindAsync(id);
-        if (pocket == null) return NotFound();
+        if (pocket == null)
+        {
+            _logger.LogInformation("Pocket not found: {id}", id);
+            return NotFound();
+        }
 
         _context.Pockets.Remove(pocket);
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Pocket deleted: {id}", pocket.Id);
         return NoContent();
     }
 
-    // GET: api/pocket/account/{accountId}
+    // (GET) get all pockets for a specific account 
     [HttpGet("account/{accountId}")]
     public async Task<ActionResult<IEnumerable<Pocket>>> GetPocketsByAccount(Guid accountId)
     {
         var pockets = await _context.Pockets
             .Where(p => p.AccountId == accountId)
             .ToListAsync();
-
+        _logger.LogInformation("Get all Pockets for {account}", accountId);
         return Ok(pockets);
     }
 }

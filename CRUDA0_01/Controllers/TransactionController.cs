@@ -11,7 +11,7 @@ public class TransactionController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-    //TO DO: Add Logging 
+   
     public TransactionController(ApplicationDbContext context)
     {
         _context = context;
@@ -21,6 +21,7 @@ public class TransactionController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Transaction>>> GetTransactions()
     {
+        _logger.LogInformation("Get transactions");
         return await _context.Transactions.ToListAsync();
     }
 
@@ -29,7 +30,12 @@ public class TransactionController : ControllerBase
     public async Task<ActionResult<Transaction>> GetTransaction(Guid id)
     {
         var transaction = await _context.Transactions.FindAsync(id);
-        if (transaction == null) return NotFound();
+        if (transaction == null)
+        {
+            _logger.LogInformation("Transaction not found: {id}", id);
+            return NotFound();
+        }
+        _logger.LogInformation("Get transaction with id: {id}", id);
         return transaction;
     }
 
@@ -39,7 +45,7 @@ public class TransactionController : ControllerBase
     {
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Created transaction: {transaction}", transaction);
         return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transaction);
     }
 
@@ -47,11 +53,15 @@ public class TransactionController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTransaction(Guid id, Transaction updated)
     {
-        if (id != updated.Id) return BadRequest();
+        if (id != updated.Id)
+        {
+            _logger.LogInformation("Transaction not found: {id} and {idt}", id, updated.Id);
+            return BadRequest();
+        }
 
         _context.Entry(updated).State = EntityState.Modified;
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Update transaction with id: {id}", updated.Id);
         return NoContent();
     }
 
@@ -60,11 +70,15 @@ public class TransactionController : ControllerBase
     public async Task<IActionResult> DeleteTransaction(Guid id)
     {
         var transaction = await _context.Transactions.FindAsync(id);
-        if (transaction == null) return NotFound();
+        if (transaction == null)
+        {
+            _logger.LogInformation("Transaction not found: {id}", id);
+            return NotFound();
+        }
 
         _context.Transactions.Remove(transaction);
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Delete transaction: {id}", id);
         return NoContent();
     }
 
@@ -75,7 +89,7 @@ public class TransactionController : ControllerBase
         var transactions = await _context.Transactions
             .Where(t => t.AccountId == accountId)
             .ToListAsync();
-
+        _logger.LogInformation("Get transactions with account: {accountId}", accountId);
         return Ok(transactions);
     }
 }

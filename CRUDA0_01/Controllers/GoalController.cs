@@ -11,7 +11,7 @@ public class GoalController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<AccountController> _logger;
-    //TO DO: Add Logging 
+    
     public GoalController(ApplicationDbContext context)
     {
         _context = context;
@@ -20,6 +20,7 @@ public class GoalController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Goal>>> GetGoals()
     {
+        _logger.LogInformation("Get all goals");
         return await _context.Goals.ToListAsync();
     }
 
@@ -27,18 +28,23 @@ public class GoalController : ControllerBase
     public async Task<ActionResult<Goal>> GetGoal(Guid id)
     {
         var goal = await _context.Goals.FindAsync(id);
-        if (goal == null) return NotFound();
+        if (goal == null)
+        {
+            _logger.LogInformation("Goal not found: {id}", id);
+            return NotFound();
+        }
+        _logger.LogInformation("Goal found: {id}", goal.Id);
         return goal;
     }
     
-    // GET: api/goal/account/{accountId}
+  
     [HttpGet("account/{accountId}")]
     public async Task<ActionResult<IEnumerable<Goal>>> GetGoalsForAccount(Guid accountId)
     {
         var goals = await _context.Goals
             .Where(g => g.AccountId == accountId)
             .ToListAsync();
-
+        _logger.LogInformation("Goals for account({id}) found", accountId);
         return Ok(goals);
     }
 
@@ -48,6 +54,8 @@ public class GoalController : ControllerBase
     {
         _context.Goals.Add(goal);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Goal created: {goal}", goal.Id);
 
         return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goal);
     }
@@ -55,11 +63,15 @@ public class GoalController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateGoal(Guid id, Goal updated)
     {
-        if (id != updated.Id) return BadRequest();
+        if (id != updated.Id)
+        {
+            _logger.LogInformation("Goal not found: {id}", updated.Id);
+            return BadRequest();
+        }
 
         _context.Entry(updated).State = EntityState.Modified;
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Goal updated: {id}", updated.Id);
         return NoContent();
     }
 
@@ -67,11 +79,15 @@ public class GoalController : ControllerBase
     public async Task<IActionResult> DeleteGoal(Guid id)
     {
         var goal = await _context.Goals.FindAsync(id);
-        if (goal == null) return NotFound();
+        if (goal == null)
+        {
+            _logger.LogInformation("Goal not found: {id}", id);
+            return NotFound();
+        }
 
         _context.Goals.Remove(goal);
         await _context.SaveChangesAsync();
-
+        _logger.LogInformation("Goal deleted: {id}", goal.Id);
         return NoContent();
     }
 }
